@@ -1,0 +1,49 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: simplewebsite-ns
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simplewebsite-deployment
+  namespace: simplewebsite-ns
+  labels:
+    app: simplewebsite
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: simplewebsite
+  template:
+    metadata:
+      labels:
+        app: simplewebsite
+    spec:
+      containers:
+        - name: simplewebsite
+          image: tribelcheif/simplewebsite1:latest
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simplewebsite-service
+  namespace: simplewebsite-ns
+spec:
+  selector:
+    app: simplewebsite
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
